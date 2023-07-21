@@ -1,0 +1,38 @@
+#include <iostream>
+#include <cstdlib>
+#include <sys/time.h>
+#include <omp.h>
+
+using namespace std;
+const int N = 4000;
+int A[N][N];
+int B[N][N];
+int C[N][N];
+int main()
+{
+double time; 
+struct timeval ts, tf; 
+int i,j,k;
+
+ for (i = 0; i < N; i++) {
+    for ( j = 0; j < N; j++) {
+        A[i][j] = rand() % 100;
+        B[i][j] = rand() % 100;
+    }
+ }
+
+gettimeofday(&ts,NULL);
+
+ #pragma omp parallel for private (i,j,k) shared(A,B,C)
+        for (i = 0; i < N; i++) {
+                for (j = 0; j < N; j++) {
+                  for ( k = 0; k < N; k++) {
+                      C[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+gettimeofday(&tf,NULL);
+        time=(tf.tv_sec-ts.tv_sec)+(tf.tv_usec-ts.tv_usec)*0.000001;
+cout << "Time taken: " << time<< endl;
+    return 0;
+}
